@@ -119,7 +119,8 @@ st.markdown("<p style='color: #94A3B8; font-size: 14px; margin-top: -10px;'>Your
 st.divider()
 
 # --- كروت الـ Macros العلوية (Executive Value Cards) ---
-st.markdown("<h2>🎯 Daily Target Macronutrients</h2>", unsafe_allow_html=True)col1, col2, col3, col4 = st.columns(4)
+st.markdown("<h2>🎯 Daily Target Macronutrients</h2>", unsafe_allow_html=True)
+col1, col2, col3, col4 = st.columns(4)
 
 with col1:
     st.markdown(f'<div class="macro-card"><div class="macro-label">Target Calories</div><div class="macro-value">{int(target_calories)} kcal</div></div>', unsafe_allow_html=True)
