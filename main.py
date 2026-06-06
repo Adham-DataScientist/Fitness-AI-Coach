@@ -2,194 +2,240 @@ import streamlit as st
 import pandas as pd
 import numpy as np
 
-# --- 1. CONFIG & STYLING ---
+# 1. إعدادات الصفحة بتصميم رياضي عريض (Soft Gym Dark Layout)
 st.set_page_config(
-    page_title="Smart Savings Planner", 
+    page_title="Fitness AI Coach & Workout Analytics", 
     layout="wide",
     initial_sidebar_state="expanded"
 )
 
+# تخصيص الـ CSS لإظهار النصوص البيضاء بوضوح وتنسيق الكروت والـ Sidebar
 st.markdown("""
     <style>
-    /* Dark Mode Settings */
+    /* إعدادات الوضع الداكن الخلفية */
     .stApp {
-        background-color: #010409;
+        background-color: #0F172A;
         color: #E2E8F0;
     }
     
-    /* Sidebar Specific Styling */
+    /* تنسيق خاص بالشريط الجانبي (Sidebar) */
     [data-testid="stSidebar"] {
-        background-color: #0B0E14;
-        border-right: 1px solid #21262D;
+        background-color: #0B132B;
+        border-right: 1px solid #1E293B;
     }
     
-    /* FIXED: Visibility of Headings in Sidebar */
+    /* تلوين وإظهار العناوين داخل الـ Sidebar بوضوح لمنع اللون الأبيض الباهت */
     .stApp [data-testid="stSidebar"] .stMarkdown h2 {
-        color: #10B981 !important; /* Green like main app headings */
+        color: #10B981 !important; /* أخضر رياضي واضح */
         font-family: 'Segoe UI', system-ui, sans-serif;
         font-weight: 700;
         font-size: 1.6rem !important;
         margin-top: -10px;
-        margin-bottom: 5px;
+        margin-bottom: 2px;
     }
-
+    
+    /* تنسيق اسمك تحت عنوان المشروع */
     .stApp [data-testid="stSidebar"] .stMarkdown h4 {
-        color: #94A3B8 !important; /* Muted subtitle color */
+        color: #38BDF8 !important; /* لون أزرق مريح وهادئ للاسم */
         font-family: 'Segoe UI', system-ui, sans-serif;
-        font-weight: 500;
-        font-size: 1.0rem !important;
+        font-weight: 600;
+        font-size: 1.1rem !important;
         margin-top: -5px;
         margin-bottom: 20px;
     }
 
-    /* Target inputs like text inputs and number inputs within sidebar */
+    .stApp [data-testid="stSidebar"] .stMarkdown h3 {
+        color: #E2E8F0 !important;
+        font-size: 1.2rem !important;
+        font-weight: 600;
+        margin-top: 15px;
+    }
+
+    /* تنسيق حقول الإدخال والقوائم داخل الـ Sidebar */
     .stApp [data-testid="stSidebar"] .stNumberInput input,
-    .stApp [data-testid="stSidebar"] .stTextInput input,
-    .stApp [data-testid="stSidebar"] .stDateInput input,
     .stApp [data-testid="stSidebar"] .stSelectbox select {
-        color: #10B981 !important; /* Bright, legible color */
-        background-color: #161B22 !important;
-        border: 1px solid #30363D !important;
+        color: #10B981 !important; 
+        background-color: #1E293B !important;
+        border: 1px solid #334155 !important;
         border-radius: 6px;
     }
 
-    /* FIX Labels within inputs */
     .stApp [data-testid="stSidebar"] label {
-        color: #F0F6FC !important;
+        color: #F8FAFC !important;
         font-weight: 600;
-        font-size: 0.9rem;
     }
     
-    /* Global Headings */
+    /* العناوين الرئيسية في الصفحة */
     h1 {
-        color: #10B981 !important; /* Accent Green */
+        color: #10B981 !important; 
         font-family: 'Segoe UI', system-ui, sans-serif;
-        font-weight: 600;
+        font-weight: 700;
         font-size: 2.2rem !important;
     }
-    
     h2 {
         color: #F8FAFC !important;
-        font-size: 1.5rem !important;
+        font-size: 1.4rem !important;
         font-weight: 500;
     }
     
-    h3 {
-        color: #10B981 !important;
-        font-size: 1.2rem !important;
-        font-weight: 600;
-        text-transform: uppercase;
-        letter-spacing: 1px;
-    }
-    
-    /* Metrics Area */
-    .metric-container {
-        display: flex;
-        gap: 20px;
-        margin-bottom: 30px;
-    }
-    
-    .metric-card {
-        background-color: #0D1117;
-        border-radius: 8px;
+    /* كروت عرض السعرات والماكروز */
+    .macro-card {
+        background-color: #1E293B;
+        border-radius: 10px;
         padding: 20px;
-        flex: 1;
-        border: 1px solid #21262D;
+        border: 1px solid #334155;
         text-align: center;
         box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
     }
-    
-    .metric-label {
-        color: #8B949E;
+    .macro-label {
+        color: #94A3B8;
         font-size: 13px;
-        font-weight: 600;
         text-transform: uppercase;
+        font-weight: 600;
         letter-spacing: 0.5px;
-        margin-bottom: 8px;
+        margin-bottom: 6px;
     }
-    
-    .metric-value {
+    .macro-value {
         color: #10B981;
-        font-size: 32px;
+        font-size: 26px;
         font-weight: 700;
     }
     
-    /* Global DIVIDER */
-    hr {
-        border-color: #21262D !important;
+    /* حاويات الجداول والرسومات */
+    .workout-box {
+        background-color: #1E293B;
+        border-radius: 10px;
+        padding: 20px;
+        border: 1px solid #334155;
+        margin-bottom: 20px;
+    }
+    .coach-tip {
+        background-color: #1E293B; 
+        padding: 15px; 
+        border-radius: 8px; 
+        border-left: 4px solid #38BDF8;
     }
     </style>
     """, unsafe_allow_html=True)
 
-# --- 2. SIDEBAR SECTION ---
+# 2. الشريط الجانبي الذكي للمدخلات البدنية (Sidebar)
 with st.sidebar:
-    st.markdown("<h2>Smart Savings Planner</h2>", unsafe_allow_html=True)
-    st.markdown("<h4>Adham Awad</h4>", unsafe_allow_html=True) # --- FIX: Name added
+    st.markdown("<h2>Fitness AI Coach</h2>", unsafe_allow_html=True)
+    st.markdown("<h4>Adham Awad</h4>", unsafe_allow_html=True) # --- إضافة اسمك هنا بوضوح
     
-    st.markdown("<h3>Financial Inputs</h3>", unsafe_allow_html=True)
-    st.write("Configure your monthly parameters.")
+    st.markdown("<h3>Athlete Metrics</h3>", unsafe_allow_html=True)
+    st.write("Input your physical attributes & goals.")
+    st.divider()
     
-    # User Inputs
-    monthly_income = st.number_input("Monthly Income ($):", min_value=0.0, value=5000.0, step=100.0)
-    savings_target_percentage = st.slider("Savings Target Percentage (%):", min_value=5, max_value=90, value=20)
+    # مدخلات المستخدم البدنية
+    weight = st.number_input("Current Weight (kg):", min_value=30.0, max_value=200.0, value=80.0, step=0.5)
+    height = st.number_input("Current Height (cm):", min_value=100.0, max_value=250.0, value=175.0, step=1.0)
+    age = st.number_input("Age:", min_value=10, max_value=100, value=25)
+    
+    gender = st.radio("Gender:", ["Male", "Female"], horizontal=True)
     
     st.divider()
-    st.markdown("<h3>Expenses breakdown</h3>", unsafe_allow_html=True)
-    # Basic expenses inputs
-    rent_expense = st.number_input("Rent / Housing ($):", min_value=0.0, value=1200.0)
-    utilities_expense = st.number_input("Utilities & Bills ($):", min_value=0.0, value=300.0)
-    food_expense = st.number_input("Groceries & Food ($):", min_value=0.0, value=500.0)
-    other_expense = st.number_input("Other Expenses ($):", min_value=0.0, value=400.0)
+    fitness_goal = st.selectbox(
+        "Select Fitness Goal:",
+        ["Cut & Fat Loss (تنشيف)", "Clean Bulk (تضخيم عضل)", "Maintenance (ثبات وزن)"]
+    )
     
     st.divider()
-    st.write("App Status: Active ✅")
+    st.markdown("🔹 **Coach Status:** `AI-Active`")
 
-# --- 3. LOGIC SECTION ---
-total_expenses = rent_expense + utilities_expense + food_expense + other_expense
-savings_target_amount = monthly_income * (savings_target_percentage / 100)
-net_remaining = monthly_income - total_expenses
-surplus_deficit = net_remaining - savings_target_amount
+# الحسابات الرياضية الذكية (Fitness Algorithmic Engine)
+if gender == "Male":
+    bmr = (10 * weight) + (6.25 * height) - (5 * age) + 5
+else:
+    bmr = (10 * weight) + (6.25 * height) - (5 * age) - 161
 
-# --- 4. MAIN CONTENT SECTION ---
-st.markdown("<h1>💰 Monthly Financial Dashboard</h1>", unsafe_allow_html=True)
-st.write("Review your progress and track your goals below.")
+if "Fat Loss" in fitness_goal:
+    target_calories = bmr * 1.375 - 500  
+    protein_g = weight * 2.2
+    carbs_g = weight * 2.0
+    fats_g = weight * 0.8
+elif "Bulk" in fitness_goal:
+    target_calories = bmr * 1.375 + 400  
+    protein_g = weight * 2.0
+    carbs_g = weight * 4.0
+    fats_g = weight * 1.0
+else:
+    target_calories = bmr * 1.375        
+    protein_g = weight * 1.8
+    carbs_g = weight * 3.0
+    fats_g = weight * 0.9
+
+# 3. الصفحة الرئيسية (Main Dashboard Screen)
+st.markdown("<h1>🏋️‍♂️ Fitness AI Coach & Workout Analytics</h1>", unsafe_allow_html=True)
+st.markdown("<p style='color: #94A3B8; font-size: 14px; margin-top: -10px;'>Your dynamic, algorithmic dashboard for personalized macronutrient splitting and training workflows.</p>", unsafe_allow_html=True)
 st.divider()
 
-# --- Top metrics row ---
+# --- كروت الـ Macros العلوية ---
+st.markdown("<h2>🎯 Daily Target Macronutrients</h2>", unsafe_allow_html=True)
 col1, col2, col3, col4 = st.columns(4)
+
 with col1:
-    st.markdown(f'<div class="metric-card"><div class="metric-label">Total Income</div><div class="metric-value">${monthly_income:,.2f}</div></div>', unsafe_allow_html=True)
+    st.markdown(f'<div class="macro-card"><div class="macro-label">Target Calories</div><div class="macro-value">{int(target_calories)} kcal</div></div>', unsafe_allow_html=True)
 with col2:
-    st.markdown(f'<div class="metric-card"><div class="metric-label">Total Expenses</div><div class="metric-value" style="color: #EF4444;">-${total_expenses:,.2f}</div></div>', unsafe_allow_html=True)
+    st.markdown(f'<div class="macro-card"><div class="macro-label">Protein Target</div><div class="macro-value" style="color: #38BDF8;">{int(protein_g)}g</div></div>', unsafe_allow_html=True)
 with col3:
-    st.markdown(f'<div class="metric-card"><div class="metric-label">Savings Target</div><div class="metric-value">${savings_target_amount:,.2f}</div></div>', unsafe_allow_html=True)
+    st.markdown(f'<div class="macro-card"><div class="macro-label">Carbohydrates</div><div class="macro-value" style="color: #F59E0B;">{int(carbs_g)}g</div></div>', unsafe_allow_html=True)
 with col4:
-    color_goal = "#10B981" if net_remaining >= 0 else "#EF4444"
-    st.markdown(f'<div class="metric-card"><div class="metric-label">Net Remaining</div><div class="metric-value" style="color: {color_goal};">${net_remaining:,.2f}</div></div>', unsafe_allow_html=True)
+    st.markdown(f'<div class="macro-card"><div class="macro-label">Healthy Fats</div><div class="macro-value" style="color: #EF4444;">{int(fats_g)}g</div></div>', unsafe_allow_html=True)
 
 st.divider()
 
-# --- Feedback row ---
-st.markdown("<h2>Analysis & Recommendations</h2>", unsafe_allow_html=True)
-col_a, col_b = st.columns(2)
+# --- قسم الجداول والرسومات التحليلية ---
+col_left, col_right = st.columns(2)
 
-with col_a:
-    st.markdown("### Expense breakdown chart")
-    expense_dict = {
-        'Category': ['Rent', 'Utilities', 'Food', 'Other'],
-        'Amount ($)': [rent_expense, utilities_expense, food_expense, other_expense]
-    }
-    df_expenses = pd.DataFrame(expense_dict)
-    st.bar_chart(df_expenses.set_index('Category'), color="#3B82F6")
-
-with col_b:
-    st.markdown("### Goal status")
-    if surplus_deficit >= 0:
-        st.success(f"Excellent! You've met your savings goal with a surplus of ${surplus_deficit:,.2f} this month.")
-    elif net_remaining > 0:
-        st.warning(f"You saved ${net_remaining:,.2f}, but fell short of your ${savings_target_amount:,.2f} goal by ${abs(surplus_deficit):,.2f}.")
+with col_left:
+    st.markdown('<div class="workout-box">', unsafe_allow_html=True)
+    st.markdown("<p style='color: #94A3B8; font-size: 14px; font-weight: 500; margin-bottom: 15px;'>💪 Recommended AI Workout Split</p>", unsafe_allow_html=True)
+    
+    if "Fat Loss" in fitness_goal:
+        split_data = pd.DataFrame({
+            'Day': ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday'],
+            'Workout Type': ['Push (Chest/Shoulders/Triceps)', 'Pull (Back/Biceps)', 'Legs & Abs', 'HIIT Cardio + Core', 'Full Body Mobility'],
+            'Duration': ['45 mins', '45 mins', '50 mins', '30 mins', '40 mins']
+        }).set_index('Day')
     else:
-        st.error(f"Alert! You spent more than you earned by ${abs(net_remaining):,.2f} this month.")
+        split_data = pd.DataFrame({
+            'Day': ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday'],
+            'Workout Type': ['Heavy Upper Body', 'Heavy Lower Body', 'Rest / Active Recovery', 'Hypertrophy Push', 'Hypertrophy Pull'],
+            'Duration': ['60 mins', '60 mins', 'Rest', '55 mins', '55 mins']
+        }).set_index('Day')
+        
+    st.dataframe(split_data, use_container_width=True)
+    st.markdown('</div>', unsafe_allow_html=True)
 
+with col_right:
+    st.markdown('<div class="workout-box">', unsafe_allow_html=True)
+    st.markdown("<p style='color: #94A3B8; font-size: 14px; font-weight: 500; margin-bottom: 15px;'>📈 6-Week Weight Projection Trend</p>", unsafe_allow_html=True)
+    
+    weeks = [f"Week {i}" for i in range(1, 7)]
+    if "Fat Loss" in fitness_goal:
+        weight_trend = [weight - (i * 0.5) for i in range(6)]  
+    elif "Bulk" in fitness_goal:
+        weight_trend = [weight + (i * 0.3) for i in range(6)]  
+    else:
+        weight_trend = [weight] * 6
+        
+    trend_df = pd.DataFrame({
+        'Timeline': weeks,
+        'Projected Weight (kg)': weight_trend
+    }).set_index('Timeline')
+    
+    st.line_chart(trend_df, color="#10B981", use_container_width=True)
+    st.markdown('</div>', unsafe_allow_html=True)
+
+# --- قسم نصائح الكوتش الذكي ---
 st.divider()
-st.caption("Version 1.1 | Dev Adham Awad")
+st.markdown("<h2>🤖 AI Coach Strategic Insights</h2>", unsafe_allow_html=True)
+st.markdown(
+    f"""
+    <div class="coach-tip">
+        <span style='color: #A7F3D0;'>💡 <b>Personalized Coach Tip:</b> Based on your goal <b>({fitness_goal})</b>, ensure you consume at least 3-4 liters of water daily to optimize natural metabolic performance parameters.</span>
+    </div>
+    """, 
+    unsafe_allow_html=True
+)
